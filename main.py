@@ -1,4 +1,5 @@
 from operator import ge
+from tkinter import N
 import streamlit as st
 import pandas as pd
 from streamlit_folium import folium_static
@@ -10,7 +11,7 @@ import variables as v
 #------------------------------[ HEAD ]-------------------------------#
 #---------------------------------------------------------------------#
 
-st.title("Les Notes Google Maps des Restautants de Strasborg - Partie I")
+st.title("Les Notes Google Maps des Restautants de Strasbourg - Partie I")
 
 st.write("""
     Les données ont récolté avec l'API Google Places (lien).\n 
@@ -62,25 +63,31 @@ df_resto_par_rue = creation_df_rue(df)
 
 st.sidebar.header('Recherche')
 
+#---- Recherche par classement
+n_resto = df.shape[0]
+st.sidebar.write(f"Recherche Par classement sur {n_resto} établissements :")
+rang_min = int(st.sidebar.text_input('début', 1))
+rang_max = int(st.sidebar.text_input('fin', 10))
+
 #---- Recherche par notes
 st.sidebar.write("Recherche Par Note :")
 note_min = st.sidebar.slider(label="note minimale :", 
-                            min_value=v.note_min, 
-                            max_value=v.note_max, 
-                            step=v.note_step)
+                            min_value=v.note_min, max_value=v.note_max, 
+                            value=v.note_min,step=v.note_step)
 
 note_max = st.sidebar.slider(label="note maximale :", 
-                            min_value=v.note_min, 
-                            max_value=v.note_max, 
-                            step=v.note_step)
+                            min_value=v.note_min, max_value=v.note_max, 
+                            value=v.note_max, step=v.note_step)
 
 #---- Recherche par nombre de review
 st.sidebar.write("Recherche Par Nombre de Review :")
 nombre_min = int(st.sidebar.text_input('nombre minimum', 1))
 
-nombre_max = int(st.sidebar.text_input('nombre maximum', 1000))
+nombre_max = int(st.sidebar.text_input('nombre maximum', 10000))
 
 #---- Recherche par rue
+st.sidebar.write("Recherche Par Rue :")
+
 def creation_list_resto_sidebar(df_resto_par_rue):
 
     list_resto = []
@@ -108,8 +115,16 @@ rue = rue_selected.split(' | ')[-1]
 #---------------------------------------------------------------------#
 
 #fonction pour générer la carte
-def creation_df_carte(df, note_min, note_max, nombre_min, nombre_max, rue):
+def creation_df_carte(df, rang_min, rang_max,
+                    note_min, note_max, 
+                    nombre_min, nombre_max, 
+                    rue):
+
     df_min_max = df.copy()
+
+    #par rang
+    df_min_max = df_min_max.loc[df_min_max['ranking']>=rang_min]
+    df_min_max = df_min_max.loc[df_min_max['ranking']<=rang_max]
 
     #par note
     df_min_max = df_min_max.loc[df_min_max['rating']>=note_min]
@@ -147,7 +162,7 @@ def generate_carte(carte, df):
 #init
 carte = folium.Map(location=v.strasbourg_loc, zoom_start=v.zoom_start)
 
-df_carte = creation_df_carte(df, note_min, note_max, nombre_min, nombre_max, rue)
+df_carte = creation_df_carte(df, rang_min, rang_max, note_min, note_max, nombre_min, nombre_max, rue)
 
 carte = generate_carte(carte, df_carte)
 

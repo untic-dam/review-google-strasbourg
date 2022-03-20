@@ -1,3 +1,4 @@
+from operator import ge
 import streamlit as st
 import pandas as pd
 from streamlit_folium import folium_static
@@ -47,9 +48,9 @@ note_max = st.sidebar.slider(label="note maximale :",
 
 #---- Recherche par nombre de review
 st.sidebar.write("Recherche Par Nombre de Review :")
-nombre_min = st.sidebar.text_input('nombre minimum', 1)
+nombre_min = int(st.sidebar.text_input('nombre minimum', 1))
 
-nombre_max = st.sidebar.text_input('nombre maximum', 1000)
+nombre_max = int(st.sidebar.text_input('nombre maximum', 1000))
 
 #---- Recherche par rue
 
@@ -59,16 +60,26 @@ nombre_max = st.sidebar.text_input('nombre maximum', 1000)
 #------------------------------[ M A P ]------------------------------#
 #---------------------------------------------------------------------#
 
-#init
-carte = folium.Map(location=v.strasbourg_loc, zoom_start=v.zoom_start)
+def creation_df_carte(df, note_min, note_max, nombre_min, nombre_max, rue):
+    df_min_max = df.copy()
 
-def generate_carte_rating(carte, df, rating_min, rating_max):
+    #par note
+    df_min_max = df_min_max.loc[df_min_max['rating']>=note_min]
+    df_min_max = df_min_max.loc[df_min_max['rating']<=note_max]
+
+    #par nombre
+    df_min_max = df_min_max.loc[df_min_max['user_ratings_total']>=nombre_min]
+    df_min_max = df_min_max.loc[df_min_max['user_ratings_total']<=nombre_max]
+
+    #par rue
+    if len(list(rue))>1:
+        df_min_max = df_min_max[df_min_max['rue']==rue]
     
-    #range selection
-    df_rating_min = df.loc[df['rating']>=rating_min]
-    df_rating_min_max = df_rating_min.loc[df_rating_min['rating']<=rating_max]
+    return df_min_max
 
-    for index, row in df_rating_min_max.iterrows():
+def generate_carte(carte, df):
+
+    for index, row in df.iterrows():
         lat = row['lat']
         lon = row['lon']
         name = row['name']
@@ -79,10 +90,15 @@ def generate_carte_rating(carte, df, rating_min, rating_max):
 
         folium.Marker([lat, lon], tooltip=txt_tooltip, popup=txt_popup).add_to(carte)
 
-
     return carte
 
-carte = generate_carte_rating(carte, df, note_min, note_max)
+#init
+carte = folium.Map(location=v.strasbourg_loc, zoom_start=v.zoom_start)
+
+df_carte = creation_df_carte(df, note_min, note_max, nombre_min, nombre_max, rue='')
+
+carte = generate_carte(carte, df_carte)
+
 
 #affichage statique
 folium_static(carte)

@@ -221,10 +221,10 @@ carte_n_resto_str = format_millier_avec_espace(carte_n_resto)
 carte_sum_review = df_carte['user_ratings_total'].sum()
 carte_sum_review_str = format_millier_avec_espace(carte_sum_review)
 carte_note_moy = df_carte['rating'].mean()
-st.write("""
-            il y a {} restaurants affiché sur la carte.\n
-            Pour un total de {} review et une note moyenne de {}.
-        """.format(carte_n_resto_str, carte_sum_review_str, carte_note_moy)) 
+st.markdown("""
+                il y a **{}** 🍽️ restaurants affiché sur la carte.\n
+                Pour un total de **{}** 👥 review et une note moyenne de **{:.2f}** ⭐.
+            """.format(carte_n_resto_str, carte_sum_review_str, carte_note_moy)) 
 
 #moyenne et nombre de review
 carte_note_min = df_carte['rating'].min()
@@ -235,9 +235,10 @@ carte_nombre_max = df_carte['user_ratings_total'].max()
 carte_nombre_min_str = "{:,}".format(carte_nombre_min).replace(',', ' ')
 carte_nombre_max_str = "{:,}".format(carte_nombre_max).replace(',', ' ')
 
-st.write("""les notes moyennes sont comprises entre {} et {} 
-            pour un nombre de review oscillant entre {} et {}.
-        """.format(carte_note_min, carte_note_max, carte_nombre_min_str, carte_nombre_max_str))
+st.markdown("""
+                Les notes moyennes sont comprises entre **{}** et **{}** ⭐. \n
+                pour un nombre de review oscillant entre **{}** et **{}** 👥.
+            """.format(carte_note_min, carte_note_max, carte_nombre_min_str, carte_nombre_max_str))
 
 
 

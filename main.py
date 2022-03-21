@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_folium import folium_static
 import folium
+from plotly.offline import iplot
 
 import variables as v
 
@@ -57,35 +58,43 @@ def creation_df_rue(df):
 
 df_resto_par_rue = creation_df_rue(df)
 
+
+
+
 #---------------------------------------------------------------------#
 #---------------------------[ Side Bar ]------------------------------#
 #---------------------------------------------------------------------#
 
 st.sidebar.header('Recherche')
 
-#---- Recherche par classement
+#---- Recherche par classement ---------------------------------------#
 n_resto = df.shape[0]
 st.sidebar.write(f"Recherche Par classement sur {n_resto} établissements :")
-rang_min = int(st.sidebar.text_input('début', 1))
-rang_max = int(st.sidebar.text_input('fin', 10))
+rang_min = int(st.sidebar.text_input('début', v.param_values['rang_min']))
+rang_max = int(st.sidebar.text_input('fin', v.param_values['rang_max']))
 
-#---- Recherche par notes
+
+#---- Recherche par notes ---------------------------------------------#
 st.sidebar.write("Recherche Par Note :")
 note_min = st.sidebar.slider(label="note minimale :", 
                             min_value=v.note_min, max_value=v.note_max, 
-                            value=v.note_min,step=v.note_step)
+                            value=v.param_values['note_min'],
+                            step=v.note_step)
 
 note_max = st.sidebar.slider(label="note maximale :", 
                             min_value=v.note_min, max_value=v.note_max, 
-                            value=v.note_max, step=v.note_step)
+                            value=v.param_values['note_max'], 
+                            step=v.note_step)
 
-#---- Recherche par nombre de review
+
+#---- Recherche par nombre de review ---------------------------------#
 st.sidebar.write("Recherche Par Nombre de Review :")
-nombre_min = int(st.sidebar.text_input('nombre minimum', 1))
+nombre_min = int(st.sidebar.text_input('nombre minimum', v.param_values['nombre_min']))
 
-nombre_max = int(st.sidebar.text_input('nombre maximum', 10000))
+nombre_max = int(st.sidebar.text_input('nombre maximum', v.param_values['nombre_max']))
 
-#---- Recherche par rue
+
+#---- Recherche par rue -----------------------------------------------#
 st.sidebar.write("Recherche Par Rue :")
 
 def creation_list_resto_sidebar(df_resto_par_rue):
@@ -110,9 +119,38 @@ rue_selected = st.sidebar.selectbox('rue :', list_resto)
 rue = rue_selected.split(' | ')[-1]
 
 
+
 #---------------------------------------------------------------------#
 #------------------------------[ M A P ]------------------------------#
 #---------------------------------------------------------------------#
+
+def reset_parametres(df):
+    """
+    Reinit les paramètres afficher dans le sidebar 
+    en fonction du df_carte 
+
+    Args:
+        df (DataFrame): DataFrame contenant tous les restaurants
+                        selon les paramètres du sidebar
+
+    Returns:
+        ditc : dict contenat tous les paramètres de la sidebar
+    """
+
+    value_reseted = {
+        'rang_min': df['ranking'].min(),
+        'rang_max': df['ranking'].max(),
+
+        'note_min': df['rating'].min(),
+        'note_max': df['rating'].max(),
+
+        'nombre_min': df['user_ratings_total'].min(),
+        'nombre_max': df['user_ratings_total'].max()
+    }
+
+    return value_reseted
+    
+
 
 #fonction pour générer la carte
 def creation_df_carte(df, rang_min, rang_max,
@@ -170,3 +208,13 @@ carte = generate_carte(carte, df_carte)
 folium_static(carte)
 
 
+
+
+#---------------------------------------------------------------------#
+#------------------------------[ V I Z ]------------------------------#
+#---------------------------------------------------------------------#
+
+st.write("Voici les données utilisées pour être affiché sur la carte.")
+st.dataframe(df_carte)
+
+#df_carte.iplot()

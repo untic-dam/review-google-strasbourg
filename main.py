@@ -12,11 +12,11 @@ import variables as v
 #------------------------------[ HEAD ]-------------------------------#
 #---------------------------------------------------------------------#
 
-st.title("Les Notes Google Maps des Restautants de Strasbourg - Partie I")
+st.title("Les Notes Google Maps 🗺️ des Restautants 🍽️ de Strasbourg - Partie I")
 
-st.write("""
-    Les données ont récolté avec l'API Google Places (lien).\n 
-    L'objectif est de visualiser l'ensemble des notes récoltées sur Google Maps
+st.markdown("""
+    Les données ont été récolté avec l'API [Google Places](https://developers.google.com/maps/documentation/places/web-service/overview).\n 
+    L'objectif est de visualiser l'ensemble des notes récoltées par les différents restaurants de Strasbourg.
 """)
 
 
@@ -70,9 +70,9 @@ st.sidebar.header('Recherche')
 #---- Recherche par classement ---------------------------------------#
 st.sidebar.write("-----")
 n_resto = df.shape[0]
-st.sidebar.write(f"Recherche Par classement sur {n_resto} établissements :")
-rang_min = int(st.sidebar.text_input('début', v.param_values['rang_min']))
-rang_max = int(st.sidebar.text_input('fin', v.param_values['rang_max']))
+st.sidebar.write(f"Recherche Par classement :")
+rang_min = int(st.sidebar.text_input('top', v.param_values['rang_min']))
+rang_max = int(st.sidebar.text_input('', v.param_values['rang_max']))
 
 
 #---- Recherche par notes ---------------------------------------------#
@@ -127,6 +127,7 @@ rue = rue_selected.split(' | ')[-1]
 #---------------------------------------------------------------------#
 #------------------------------[ M A P ]------------------------------#
 #---------------------------------------------------------------------#
+st.header('Carte 🗺️ :')
 
 def reset_parametres(df):
     """
@@ -209,7 +210,15 @@ df_carte = creation_df_carte(df, rang_min, rang_max, note_min, note_max, nombre_
 carte = generate_carte(carte, df_carte)
 
 #affichage statique
-folium_static(carte)
+folium_static(carte, width=800, height=400)
+
+
+
+
+#---------------------------------------------------------------------#
+#----------------------------[ Txt Stat ]-----------------------------#
+#---------------------------------------------------------------------#
+st.header('Quelques infos ℹ️ :')
 
 #affiche quelques info de la carte
 def format_millier_avec_espace(nombre):
@@ -247,8 +256,9 @@ st.markdown("""
 #---------------------------------------------------------------------#
 #------------------------------[ V I Z ]------------------------------#
 #---------------------------------------------------------------------#
+st.header('Regardons ça de plus prés 👓 📈 :')
 
-st.write("Voici les données utilisées pour être affiché sur la carte.")
+st.markdown("Voici les données utilisées pour la carte.")
 st.dataframe(df_carte)
 
 #df_carte.iplot()

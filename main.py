@@ -68,6 +68,7 @@ df_resto_par_rue = creation_df_rue(df)
 st.sidebar.header('Recherche')
 
 #---- Recherche par classement ---------------------------------------#
+st.sidebar.write("-----")
 n_resto = df.shape[0]
 st.sidebar.write(f"Recherche Par classement sur {n_resto} établissements :")
 rang_min = int(st.sidebar.text_input('début', v.param_values['rang_min']))
@@ -75,6 +76,7 @@ rang_max = int(st.sidebar.text_input('fin', v.param_values['rang_max']))
 
 
 #---- Recherche par notes ---------------------------------------------#
+st.sidebar.write("-----")
 st.sidebar.write("Recherche Par Note :")
 note_min = st.sidebar.slider(label="note minimale :", 
                             min_value=v.note_min, max_value=v.note_max, 
@@ -88,6 +90,7 @@ note_max = st.sidebar.slider(label="note maximale :",
 
 
 #---- Recherche par nombre de review ---------------------------------#
+st.sidebar.write("-----")
 st.sidebar.write("Recherche Par Nombre de Review :")
 nombre_min = int(st.sidebar.text_input('nombre minimum', v.param_values['nombre_min']))
 
@@ -95,6 +98,7 @@ nombre_max = int(st.sidebar.text_input('nombre maximum', v.param_values['nombre_
 
 
 #---- Recherche par rue -----------------------------------------------#
+st.sidebar.write("-----")
 st.sidebar.write("Recherche Par Rue :")
 
 def creation_list_resto_sidebar(df_resto_par_rue):
@@ -206,6 +210,35 @@ carte = generate_carte(carte, df_carte)
 
 #affichage statique
 folium_static(carte)
+
+#affiche quelques info de la carte
+def format_millier_avec_espace(nombre):
+    return "{:,}".format(nombre).replace(',', ' ')
+
+#nombre de restaurants
+carte_n_resto = df_carte.shape[0]
+carte_n_resto_str = format_millier_avec_espace(carte_n_resto)
+carte_sum_review = df_carte['user_ratings_total'].sum()
+carte_sum_review_str = format_millier_avec_espace(carte_sum_review)
+carte_note_moy = df_carte['rating'].mean()
+st.write("""
+            il y a {} restaurants affiché sur la carte.\n
+            Pour un total de {} review et une note moyenne de {}.
+        """.format(carte_n_resto_str, carte_sum_review_str, carte_note_moy)) 
+
+#moyenne et nombre de review
+carte_note_min = df_carte['rating'].min()
+carte_note_max = df_carte['rating'].max()
+carte_nombre_min = df_carte['user_ratings_total'].min()
+carte_nombre_max = df_carte['user_ratings_total'].max()
+#mise en forme pour éviter 1,637 et avoir plutôt 1 637 (avec un espace)
+carte_nombre_min_str = "{:,}".format(carte_nombre_min).replace(',', ' ')
+carte_nombre_max_str = "{:,}".format(carte_nombre_max).replace(',', ' ')
+
+st.write("""les notes moyennes sont comprises entre {} et {} 
+            pour un nombre de review oscillant entre {} et {}.
+        """.format(carte_note_min, carte_note_max, carte_nombre_min_str, carte_nombre_max_str))
+
 
 
 

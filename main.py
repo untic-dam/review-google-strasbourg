@@ -395,7 +395,7 @@ def plot_bar(df, x, y, color):
     color_panel = px.colors.sequential.Mint
 
     fig = px.bar(data_frame=df, x=x, y=y,
-                 title="Nombre de review par restaurants",
+                 title="Classement des meilleurs restaurants",
                  width=800, height=500,
                  orientation='v', text=color, 
                  color=color, color_continuous_scale=color_panel,

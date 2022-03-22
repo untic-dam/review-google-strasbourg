@@ -257,6 +257,8 @@ st.markdown("""
 #------------------------------[ V I Z ]------------------------------#
 #---------------------------------------------------------------------#
 st.header('Regardons ça de plus prés 👓 📈 :')
+
+#---- Histogramme ----------------------------------------------------#
 def calcul_bins(df, dx=0.1):
     
     delta_note = df['rating'].max() - df['rating'].min() #5.0 - 4,2 = 0.79999991
@@ -297,10 +299,28 @@ def plot_hist_rating(df_in):
     return fig
 
 fig_hist = plot_hist_rating(df_carte)
-st.plotly_chart(fig_hist, use_container_width=False)
+st.plotly_chart(fig_hist, use_container_width=True)
 
+#---- Bar Plot ------------------------------------------------------#
+def plot_bar(df, x, y, color):
+    
+    #couleur du graphique
+    color_panel = px.colors.sequential.Mint
 
+    fig = px.bar(data_frame=df, x=x, y=y,
+                 title="Nombre de review par restaurants",
+                 orientation='v', text=color, 
+                 color=color, color_continuous_scale=color_panel)
 
+    fig.update_traces(texttemplate='%{text:.2s}*', textposition='outside')#affiche la note au-dessus des bars
+    fig.update_layout(xaxis_tickangle=-45)
+
+    return fig
+
+fig_bar = plot_bar(df_carte, x='name', y='user_ratings_total', color='rating')
+st.plotly_chart(fig_bar, use_container_width=True)
+
+#---- DF Plot -------------------------------------------------------#
 st.markdown("Voici les données utilisées pour la carte.")
 st.dataframe(df_carte)
 

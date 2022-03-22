@@ -1,10 +1,8 @@
-from operator import ge
-from tkinter import N
 import streamlit as st
 import pandas as pd
 from streamlit_folium import folium_static
 import folium
-from plotly.offline import iplot
+import plotly.express as px
 
 import variables as v
 
@@ -259,6 +257,49 @@ st.markdown("""
 #------------------------------[ V I Z ]------------------------------#
 #---------------------------------------------------------------------#
 st.header('Regardons ça de plus prés 👓 📈 :')
+def calcul_bins(df, dx=0.1):
+    
+    delta_note = df['rating'].max() - df['rating'].min() #5.0 - 4,2 = 0.79999991
+    delta_note_rounded = round(delta_note, 1) #0.8
+    n_note = delta_note_rounded/dx #8.0
+    n = int(round(n_note)) + 1 #9 est le nombre de bins necessaire
+
+    print('\n\n n ',delta_note, delta_note_rounded, n_note, n)
+
+    return n
+
+def plot_hist_rating(df_in):
+    #travail sur un autre df pour pouvoir le trier dans l'ordre croissant
+    df_hist_carte = df_in.copy()
+    df_hist_carte = df_hist_carte.sort_values(by='rating', ascending=True)
+
+    bins = calcul_bins(df_hist_carte) #permet d'avoir le nombre optimalde 'bins'
+
+    #palette de couleurs
+
+    color_Gauche = 'rgb(240, 115, 115)'
+    color_Droite = 'rgb(139, 217, 170)'
+    color_gradient = px.colors.n_colors(color_Gauche, color_Droite, bins, colortype='rgb')
+
+
+    fig = px.histogram(data_frame=df_hist_carte, x='rating', 
+                        nbins=bins, labels={'value':'note moyenne'},
+                        title='Voici comment sont distribuées les notes sur la carte.',
+                        width=600, height=600, 
+                        color='rating', 
+                        color_discrete_sequence=color_gradient)
+
+
+    fig.update_layout(
+        bargap=0.2, showlegend=False
+    )
+    
+    return fig
+
+fig_hist = plot_hist_rating(df_carte)
+st.plotly_chart(fig_hist, use_container_width=False)
+
+
 
 st.markdown("Voici les données utilisées pour la carte.")
 st.dataframe(df_carte)

@@ -10,10 +10,10 @@ import variables as v
 #------------------------------[ HEAD ]-------------------------------#
 #---------------------------------------------------------------------#
 
-st.title("Les Notes Google Maps 🗺️ des Restautants 🍽️ de Strasbourg")
+st.title("Les Notes Google Maps 🗺️ des Restautants 🍽️ de votre ville")
 
 st.markdown("""
-    **L'objectif** est de pouvoir visualiser l'ensemble des reviews Google Maps afin d'aider les fins gourmets à trouver un bon restaurant (et aider les restaurateurs à voir comment se positionne leurs voisins).
+    **L'objectif** est de pouvoir visualiser l'ensemble des reviews Google Maps afin d'aider les fins gourmets à trouver un bon restaurant (et aider les restaurateurs à voir comment se positionnent leurs voisins).
     \nLes données ont été récolté avec l'API [Google Places](https://developers.google.com/maps/documentation/places/web-service/overview).
     \n Le projet est dans sa phase n°1 : visualiser les notes des différents restaurants à partir des fichiers JSON fournis par l'API Google Places.
     \nLa phase n°2 proposera un enrichissement de la base de données à l'aide d'une exploration des sites web des différents restuarants afin de trouver le type de cuisine.
@@ -25,8 +25,25 @@ st.markdown("""
 #---------------------------------------------------------------------#
 #----------------------------[ Load DF ]------------------------------#
 #---------------------------------------------------------------------#
+#choisir sa ville
+villes = ['Strasbourg', 'Toulouse']
 
-df = pd.read_csv(v.data_csv)
+ville = st.sidebar.selectbox(
+     'Où mangez vous ?',
+     villes)
+
+def selection_ville(ville):
+    data_csv = f'data/{ville}.csv'
+    if ville == 'Strasbourg':
+        lat_lon = [48.58172649898996, 7.750611183023074]
+    elif ville == 'Toulouse':
+        lat_lon = [43.604362324185146, 1.442323104216413]
+    
+    return data_csv, lat_lon
+
+data_csv, lat_lon = selection_ville(ville)
+
+df = pd.read_csv(data_csv)
 
 def creation_df_rue(df):
 
@@ -65,7 +82,7 @@ df_resto_par_rue = creation_df_rue(df)
 #---------------------------[ Side Bar ]------------------------------#
 #---------------------------------------------------------------------#
 
-st.sidebar.header('Recherche')
+
 
 #---- Recherche par classement ---------------------------------------#
 st.sidebar.write("-----")
@@ -273,7 +290,7 @@ def generate_carte(carte, df):
     return carte
 
 #init
-carte = folium.Map(location=v.strasbourg_loc, zoom_start=v.zoom_start)
+carte = folium.Map(location=lat_lon, zoom_start=v.zoom_start)
 
 df_carte = creation_df_carte(df, rang_min, rang_max, note_min, note_max, nombre_min, nombre_max, rue)
 
@@ -378,7 +395,7 @@ def plot_bar(df, x, y, color):
     color_panel = px.colors.sequential.Mint
 
     fig = px.bar(data_frame=df, x=x, y=y,
-                 title="Nombre de review par restaurants",
+                 title="Classement des meilleurs restaurants",
                  width=800, height=500,
                  orientation='v', text=color, 
                  color=color, color_continuous_scale=color_panel,

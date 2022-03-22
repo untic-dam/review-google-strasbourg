@@ -235,7 +235,7 @@ def create_color_scale(n_color):
     color_Droite = (0, 0, 0) #(r,g,b)
     color_Gauche = (0, 255, 0)
     
-    color_gradient = px.colors.n_colors(color_Gauche, color_Droite, n_color, colortype='tuple')
+    color_gradient = px.colors.n_colors(color_Gauche, color_Droite, n_color, colortype='tuple') 
     color_gradient_html = [rgb2hex(c) for c in color_gradient]
     
     return color_gradient_html 
@@ -335,8 +335,6 @@ def calcul_bins(df, dx=0.1):
     delta_note_rounded = round(delta_note, 1) #0.8
     n_note = delta_note_rounded/dx #8.0
     n = int(round(n_note)) + 1 #9 est le nombre de bins necessaire
-
-    print('\n\n n ',delta_note, delta_note_rounded, n_note, n)
 
     return n
 

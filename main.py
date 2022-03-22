@@ -187,18 +187,88 @@ def creation_df_carte(df, rang_min, rang_max,
     
     return df_min_max
 
+def calcul_n_colors(df, dx=0.1):
+    """Calcul les n valeurs unique de 'rating' afin de pouvoir créer une echelle de couleur
+
+    Args:
+        df (DataFrame): DF contenant le champ 'rating' compris entre 1.0 et 5.0
+        dx (float, optional): Gap entre les note qui est par defaut 0.1. Defaults to 0.1.
+
+    Returns:
+        Int: nombres de couleurs à créer
+        list(float) : list contenant les n valeurs unique de 'rating'
+    """
+    delta_note = df['rating'].max() - df['rating'].min() #5.0 - 4,2 = 0.79999991
+    delta_note_rounded = round(delta_note, 1) #0.8
+    n_note = delta_note_rounded/dx #8.0
+    n_color = round(n_note) + 1 #9 est le nombre de bins necessaire
+    
+    #liste des valeurs unique pour colorier la carte plus tard
+    list_valeurs = list(df['rating'].sort_values(ascending=False).unique())
+
+    return n_color, list_valeurs
+
+def rgb2hex(c):
+    """Converit un RGB -> HTML code Couleur
+
+    Args:
+        c (tuple): tuple contenant les 3 valeurs de (r,g,b)
+
+    Returns:
+        Str: Code couleur html
+    """
+    r = int(c[0])
+    g = int(c[1])
+    b = int(c[2])
+    
+    return "#{:02x}{:02x}{:02x}".format(r,g,b)
+
+def create_color_scale(n_color):
+    """Génère une list contenant les codes couleurs html afin de générer un gradient allant du noir au vert.
+
+    Args:
+        n_color (Int): n couleur à générer sous la forme d'un gradiant.
+
+    Returns:
+        List(Str): list contenant les codes couleurs html 
+    """
+    color_Droite = (0, 0, 0) #(r,g,b)
+    color_Gauche = (0, 255, 0)
+    
+    color_gradient = px.colors.n_colors(color_Gauche, color_Droite, n_color, colortype='tuple')
+    color_gradient_html = [rgb2hex(c) for c in color_gradient]
+    
+    return color_gradient_html 
+
 def generate_carte(carte, df):
+    
+    #creer une echelle de couleur
+    n_color, n_valeurs = calcul_n_colors(df)
+
+    color_gradient_html = create_color_scale(n_color)
+    
+    #creer un dict comme : {'rating':code HTML, '4.0': c1, '4.1':c2, etc etc} 
+    dict_valeurs_couleur = {}
+    for k,v in zip(n_valeurs, color_gradient_html):
+        dict_valeurs_couleur[k] = v
 
     for index, row in df.iterrows():
         lat = row['lat']
         lon = row['lon']
         name = row['name']
         rating = row['rating']
+        c = dict_valeurs_couleur[rating]
         n_rating = row['user_ratings_total']
         txt_tooltip = f"{name} | {rating} * | {n_rating} évaluation(s)"
         txt_popup = f"{name} {rating} * {n_rating} évaluation(s)"
 
-        folium.Marker([lat, lon], tooltip=txt_tooltip, popup=txt_popup).add_to(carte)
+        folium.Marker([lat, lon], 
+                      tooltip=txt_tooltip, 
+                      popup=txt_popup,
+                      icon=(folium.Icon(color='white', 
+                                        icon="star",
+                                        icon_color=c))).add_to(carte)
+
 
     return carte
 

@@ -12,11 +12,13 @@ import variables as v
 #------------------------------[ HEAD ]-------------------------------#
 #---------------------------------------------------------------------#
 
-st.title("Les Notes Google Maps 🗺️ des Restautants 🍽️ de Strasbourg - Partie I")
+st.title("Les Notes Google Maps 🗺️ des Restautants 🍽️ de Strasbourg")
 
 st.markdown("""
-    Les données ont été récolté avec l'API [Google Places](https://developers.google.com/maps/documentation/places/web-service/overview).\n 
-    L'objectif est de visualiser l'ensemble des notes récoltées par les différents restaurants de Strasbourg.
+    **L'objectif** est de pouvoir visualiser l'ensemble des reviews Google Maps afin d'aider les fins gourmets à trouver un bon restaurant (et aider les restaurateurs à voir comment se positionne leurs voisins).
+    \nLes données ont été récolté avec l'API [Google Places](https://developers.google.com/maps/documentation/places/web-service/overview).
+    \n Le projet est dans sa phase n°1 : visualiser les notes des différents restaurants à partir des fichiers JSON fournis par l'API Google Places.
+    \nLa phase n°2 proposera un enrichissement de la base de données à l'aide d'une exploration des sites web des différents restuarants afin de trouver le type de cuisine.
 """)
 
 
@@ -262,3 +264,16 @@ st.markdown("Voici les données utilisées pour la carte.")
 st.dataframe(df_carte)
 
 #df_carte.iplot()
+
+
+
+
+#---------------------------------------------------------------------#
+#---------------------------[ A propos ]------------------------------#
+#---------------------------------------------------------------------#
+st.markdown("""
+    Réalisé par [Damien Jacob](https://twitter.com/Jaco_bDamien).
+    \nGithub du projet : [https://github.com/untic-dam/review-google-strasbourg](https://github.com/untic-dam/review-google-strasbourg)
+    """)
+
+st.header("**Et Bon Appétit**")

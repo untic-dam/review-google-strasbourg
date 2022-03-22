@@ -13,7 +13,7 @@ import variables as v
 st.title("Les Notes Google Maps 🗺️ des Restautants 🍽️ de votre ville")
 
 st.markdown("""
-    **L'objectif** est de pouvoir visualiser l'ensemble des reviews Google Maps afin d'aider les fins gourmets à trouver un bon restaurant (et aider les restaurateurs à voir comment se positionne leurs voisins).
+    **L'objectif** est de pouvoir visualiser l'ensemble des reviews Google Maps afin d'aider les fins gourmets à trouver un bon restaurant (et aider les restaurateurs à voir comment se positionnent leurs voisins).
     \nLes données ont été récolté avec l'API [Google Places](https://developers.google.com/maps/documentation/places/web-service/overview).
     \n Le projet est dans sa phase n°1 : visualiser les notes des différents restaurants à partir des fichiers JSON fournis par l'API Google Places.
     \nLa phase n°2 proposera un enrichissement de la base de données à l'aide d'une exploration des sites web des différents restuarants afin de trouver le type de cuisine.
@@ -82,7 +82,7 @@ df_resto_par_rue = creation_df_rue(df)
 #---------------------------[ Side Bar ]------------------------------#
 #---------------------------------------------------------------------#
 
-st.sidebar.header('Recherche')
+
 
 #---- Recherche par classement ---------------------------------------#
 st.sidebar.write("-----")

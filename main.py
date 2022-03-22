@@ -270,9 +270,9 @@ def calcul_bins(df, dx=0.1):
 
     return n
 
-def plot_hist_rating(df_in):
+def plot_hist_rating(df):
     #travail sur un autre df pour pouvoir le trier dans l'ordre croissant
-    df_hist_carte = df_in.copy()
+    df_hist_carte = df.copy()
     df_hist_carte = df_hist_carte.sort_values(by='rating', ascending=True)
 
     bins = calcul_bins(df_hist_carte) #permet d'avoir le nombre optimalde 'bins'
@@ -287,7 +287,7 @@ def plot_hist_rating(df_in):
     fig = px.histogram(data_frame=df_hist_carte, x='rating', 
                         nbins=bins, labels={'value':'note moyenne'},
                         title='Voici comment sont distribuées les notes sur la carte.',
-                        width=600, height=600, 
+                        width=800, height=400, 
                         color='rating', 
                         color_discrete_sequence=color_gradient)
 
@@ -295,6 +295,8 @@ def plot_hist_rating(df_in):
     fig.update_layout(
         bargap=0.2, showlegend=False
     )
+    fig.update_layout({'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+                     'paper_bgcolor': 'rgba(0, 0, 0, 0)'})
     
     return fig
 
@@ -309,11 +311,17 @@ def plot_bar(df, x, y, color):
 
     fig = px.bar(data_frame=df, x=x, y=y,
                  title="Nombre de review par restaurants",
+                 width=800, height=500,
                  orientation='v', text=color, 
-                 color=color, color_continuous_scale=color_panel)
+                 color=color, color_continuous_scale=color_panel,
+                 range_x=[0,10], range_y=[0, df[y].quantile(q=0.98)])
 
     fig.update_traces(texttemplate='%{text:.2s}*', textposition='outside')#affiche la note au-dessus des bars
+
     fig.update_layout(xaxis_tickangle=-45)
+    #remove bck color
+    fig.update_layout({'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+                     'paper_bgcolor': 'rgba(0, 0, 0, 0)'})
 
     return fig
 
